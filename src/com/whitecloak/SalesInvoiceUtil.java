@@ -25,7 +25,7 @@ public class SalesInvoiceUtil {
         return salesInvoice;
     }
 
-    public static BigDecimal computeOrderTotal (SalesInvoice salesInvoice) {
+    public static BigDecimal computeSalesInvoiceTotal (SalesInvoice salesInvoice) {
         int unitsSold = salesInvoice.getUnitsSold();
         BigDecimal unitPrice = salesInvoice.getUnitPrice();
         return unitPrice.multiply(BigDecimal.valueOf(unitsSold));

@@ -58,7 +58,7 @@ public class Main {
     public static BigDecimal getTotalSalesByBranch(Path filePath) {
         BigDecimal branchTotalSales = CsvFileReader.read(filePath)
                 .map(SalesInvoiceUtil::mapToSalesInvoice)
-                .map(SalesInvoiceUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::computeSalesInvoiceTotal)
                 .reduce(BigDecimal::add)
                 .get();
         return branchTotalSales;
@@ -67,7 +67,7 @@ public class Main {
     public static BigDecimal getAllTotalSales(Path directoryPath) throws IOException {
         BigDecimal allTotalSales = CsvFileReader.readAllFilesInDirectory(directoryPath)
                 .map(SalesInvoiceUtil::mapToSalesInvoice)
-                .map(SalesInvoiceUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::computeSalesInvoiceTotal)
                 .reduce(BigDecimal::add)
                 .get();
         return allTotalSales;
@@ -77,7 +77,7 @@ public class Main {
         BigDecimal allTotalSalesByYear = CsvFileReader.readAllFilesInDirectory(directoryPath)
                 .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .filter(o -> o.getOrderDateYear() == year)
-                .map(SalesInvoiceUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::computeSalesInvoiceTotal)
                 .reduce(BigDecimal::add)
                 .get();
         return allTotalSalesByYear;
