@@ -13,52 +13,52 @@ public class Main {
 
     public static void main(String[] args) {
 
-            try {
-                getAllItemsSoldInAlphabeticalOrder(Path.of("branches"))
-                        .stream()
-                        .forEach(System.out::println);
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            getAllItemsSoldInAlphabeticalOrder(Path.of("branches"))
+                    .stream()
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            System.out.println("Cebu total sales: " + getTotalSalesByBranch(Path.of("branches","cebu.csv")));
-            System.out.println("Davao total sales: " + getTotalSalesByBranch(Path.of("branches", "davao.csv")));
-            System.out.println("Manila total sales: " + getTotalSalesByBranch(Path.of("branches", "manila.csv")));
+        System.out.println("Cebu total sales: " + getTotalSalesByBranch(Path.of("branches", "cebu.csv")));
+        System.out.println("Davao total sales: " + getTotalSalesByBranch(Path.of("branches", "davao.csv")));
+        System.out.println("Manila total sales: " + getTotalSalesByBranch(Path.of("branches", "manila.csv")));
 
-            try {
-                System.out.println("All branches total sale: " + getAllTotalSales(Path.of("branches")));
+        try {
+            System.out.println("All branches total sale: " + getAllTotalSales(Path.of("branches")));
 
-                System.out.println("All branches total sale in year 2016" + getAllTotalSalesByYear(Path.of("branches"), 2016));
+            System.out.println("All branches total sale in year 2016" + getAllTotalSalesByYear(Path.of("branches"), 2016));
 
-                System.out.println("Month where Fruits are sold the most: "
-                        + getMonthWhereSoldMostByItemType(Path.of("branches"), "Fruits"));
+            System.out.println("Month where Fruits are sold the most: "
+                    + getMonthWhereSoldMostByItemType(Path.of("branches"), "Fruits"));
 
-                System.out.println("Most sold item in 2012: "+ getMostSoldItemTypeByYear(Path.of("branches"), 2012));
+            System.out.println("Most sold item in 2012: " + getMostSoldItemTypeByYear(Path.of("branches"), 2012));
 
-                System.out.println("Month where most number of units sold: "+getMonthWhereSoldMostItems(Path.of("branches")));
+            System.out.println("Month where most number of units sold: " + getMonthWhereSoldMostItems(Path.of("branches")));
 
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            System.out.println("Most sold item in Manila: "+getMostSoldItemTypeByBranch(Path.of("branches","manila.csv")));
-            System.out.println("Most sold item in Cebu: "+getMostSoldItemTypeByBranch(Path.of("branches","cebu.csv")));
-            System.out.println("Most sold item in Davao: "+getMostSoldItemTypeByBranch(Path.of("branches", "davao.csv")));
+        System.out.println("Most sold item in Manila: " + getMostSoldItemTypeByBranch(Path.of("branches", "manila.csv")));
+        System.out.println("Most sold item in Cebu: " + getMostSoldItemTypeByBranch(Path.of("branches", "cebu.csv")));
+        System.out.println("Most sold item in Davao: " + getMostSoldItemTypeByBranch(Path.of("branches", "davao.csv")));
 
     }
 
     public static Set<String> getAllItemsSoldInAlphabeticalOrder(Path directoryPath) throws IOException {
         Set<String> allItemsSorted = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
-                .map(Order::getItemType)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
+                .map(SalesInvoice::getItemType)
                 .collect(Collectors.toCollection(TreeSet::new));
         return allItemsSorted;
     }
 
-    public static BigDecimal getTotalSalesByBranch(Path filePath)  {
+    public static BigDecimal getTotalSalesByBranch(Path filePath) {
         BigDecimal branchTotalSales = CsvFileReader.read(filePath)
-                .map(OrderUtil::mapToOrderObject)
-                .map(OrderUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
+                .map(SalesInvoiceUtil::computeOrderTotal)
                 .reduce(BigDecimal::add)
                 .get();
         return branchTotalSales;
@@ -66,8 +66,8 @@ public class Main {
 
     public static BigDecimal getAllTotalSales(Path directoryPath) throws IOException {
         BigDecimal allTotalSales = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
-                .map(OrderUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
+                .map(SalesInvoiceUtil::computeOrderTotal)
                 .reduce(BigDecimal::add)
                 .get();
         return allTotalSales;
@@ -75,21 +75,22 @@ public class Main {
 
     public static BigDecimal getAllTotalSalesByYear(Path directoryPath, int year) throws IOException {
         BigDecimal allTotalSalesByYear = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .filter(o -> o.getOrderDateYear() == year)
-                .map(OrderUtil::computeOrderTotal)
+                .map(SalesInvoiceUtil::computeOrderTotal)
                 .reduce(BigDecimal::add)
                 .get();
-       return allTotalSalesByYear;
+        return allTotalSalesByYear;
     }
 
     public static String getMonthWhereSoldMostByItemType(Path directoryPath, String itemType) throws IOException {
         String monthWhereSoldMostByItemType = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .filter(o -> o.getItemType().equals(itemType))
                 .collect(
-                        Collectors.groupingBy(Order::getOrderDateMonth, Collectors.summingInt(Order::getUnitsSold))
-                ).entrySet().stream()
+                        Collectors.groupingBy(SalesInvoice::getOrderDateMonth, Collectors.summingInt(SalesInvoice::getUnitsSold))
+                ).entrySet()
+                .stream()
                 .max(Comparator.comparing(Map.Entry::getValue))
                 .get().getKey();
         return monthWhereSoldMostByItemType;
@@ -97,11 +98,12 @@ public class Main {
 
     public static String getMostSoldItemTypeByYear(Path directoryPath, int year) throws IOException {
         String mostSoldItemTypeByYear = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .filter(o -> o.getOrderDateYear() == year)
                 .collect(
-                        Collectors.groupingBy(Order::getItemType, Collectors.summingInt(Order::getUnitsSold))
-                ).entrySet().stream()
+                        Collectors.groupingBy(SalesInvoice::getItemType, Collectors.summingInt(SalesInvoice::getUnitsSold))
+                ).entrySet()
+                .stream()
                 .max(Comparator.comparing(Map.Entry::getValue))
                 .get().getKey();
         return mostSoldItemTypeByYear;
@@ -109,10 +111,11 @@ public class Main {
 
     public static String getMonthWhereSoldMostItems(Path directoryPath) throws IOException {
         String monthWhereSoldMostItems = CsvFileReader.readAllFilesInDirectory(directoryPath)
-                .map(OrderUtil::mapToOrderObject)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .collect(
-                        Collectors.groupingBy(Order::getOrderDateMonth, Collectors.summingInt(Order::getUnitsSold))
-                ).entrySet().stream()
+                        Collectors.groupingBy(SalesInvoice::getOrderDateMonth, Collectors.summingInt(SalesInvoice::getUnitsSold))
+                ).entrySet()
+                .stream()
                 .max(Comparator.comparing(Map.Entry::getValue))
                 .get().getKey();
         return monthWhereSoldMostItems;
@@ -120,10 +123,11 @@ public class Main {
 
     public static String getMostSoldItemTypeByBranch(Path filePath) {
         String itemType = CsvFileReader.read(filePath)
-                .map(OrderUtil::mapToOrderObject)
+                .map(SalesInvoiceUtil::mapToSalesInvoice)
                 .collect(
-                        Collectors.groupingBy(Order::getItemType, Collectors.summingInt(Order::getUnitsSold))
-                ).entrySet().stream()
+                        Collectors.groupingBy(SalesInvoice::getItemType, Collectors.summingInt(SalesInvoice::getUnitsSold))
+                ).entrySet()
+                .stream()
                 .max(Comparator.comparing(Map.Entry::getValue))
                 .get().getKey();
         return itemType;

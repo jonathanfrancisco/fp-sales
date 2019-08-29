@@ -3,15 +3,14 @@ package com.whitecloak;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class Order {
+public class SalesInvoice {
 
     private String itemType;
     private LocalDate orderDate;
     private int unitsSold;
     private BigDecimal unitPrice;
 
-
-    public Order() { }
+    public SalesInvoice() { }
 
     public String getItemType() {
         return itemType;
