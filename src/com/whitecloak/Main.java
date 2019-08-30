@@ -28,7 +28,7 @@ public class Main {
         try {
             System.out.println("All branches total sale: " + getAllTotalSales(Path.of("branches")));
 
-            System.out.println("All branches total sale in year 2016" + getAllTotalSalesByYear(Path.of("branches"), 2016));
+            System.out.println("All branches total sale in year 2016: " + getAllTotalSalesByYear(Path.of("branches"), 2016));
 
             System.out.println("Month where Fruits are sold the most: "
                     + getMonthWhereSoldMostByItemType(Path.of("branches"), "Fruits"));
