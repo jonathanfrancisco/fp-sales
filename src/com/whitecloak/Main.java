@@ -8,19 +8,15 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         Path allBranchCsv = Path.of("branches");
         Path cebuCsv = Path.of("branches", "cebu.csv");
         Path manilaCsv = Path.of("branches", "manila.csv");
         Path davaoCsv = Path.of("branches", "davao.csv");
 
-        try {
-            Set<String> items = getAllItemsSoldInAlphabeticalOrder(allBranchCsv);
-            items.forEach(System.out::println);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Set<String> items = getAllItemsSoldInAlphabeticalOrder(allBranchCsv);
+        items.forEach(System.out::println);
 
         BigDecimal cebuTotalSales = getTotalSalesByBranch(cebuCsv);
         System.out.println("CEBU total sales: " + cebuTotalSales);
@@ -31,25 +27,20 @@ public class Main {
         BigDecimal davaoTotalSales = getTotalSalesByBranch(davaoCsv);
         System.out.println("DAVAO total sales: " + davaoTotalSales);
 
-        try {
-            BigDecimal allBranchTotalSales = getAllTotalSales(allBranchCsv);
-            System.out.println("All branches total sale: " + allBranchTotalSales);
+        BigDecimal allBranchTotalSales = getAllTotalSales(allBranchCsv);
+        System.out.println("All branches total sale: " + allBranchTotalSales);
 
-            BigDecimal allBranchTotalSalesByYear = getAllTotalSalesByYear(allBranchCsv, 2016);
-            System.out.println("All branches total sale in year 2016: " + allBranchTotalSalesByYear);
+        BigDecimal allBranchTotalSalesByYear = getAllTotalSalesByYear(allBranchCsv, 2016);
+        System.out.println("All branches total sale in year 2016: " + allBranchTotalSalesByYear);
 
-            String monthFruitSoldMost = getMonthWhereSoldMostByItemType(allBranchCsv, "Fruits");
-            System.out.println("Month where Fruits are sold the most: " + monthFruitSoldMost);
+        String monthFruitSoldMost = getMonthWhereSoldMostByItemType(allBranchCsv, "Fruits");
+        System.out.println("Month where Fruits are sold the most: " + monthFruitSoldMost);
 
-            String mostSoldItemIn2012 = getMostSoldItemTypeByYear(allBranchCsv, 2012);
-            System.out.println("Most sold item in 2012: " + mostSoldItemIn2012);
+        String mostSoldItemIn2012 = getMostSoldItemTypeByYear(allBranchCsv, 2012);
+        System.out.println("Most sold item in 2012: " + mostSoldItemIn2012);
 
-            String monthMostNumberUnitsSold = getMonthWhereSoldMostItems(allBranchCsv);
-            System.out.println("Month where most number of units sold: " + monthMostNumberUnitsSold);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String monthMostNumberUnitsSold = getMonthWhereSoldMostItems(allBranchCsv);
+        System.out.println("Month where most number of units sold: " + monthMostNumberUnitsSold);
 
         String manilaMostSoldItem = getMostSoldItemTypeByBranch(manilaCsv);
         System.out.println("Most sold item in MANILA: " + manilaMostSoldItem);
